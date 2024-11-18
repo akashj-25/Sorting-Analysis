@@ -1,5 +1,7 @@
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 
 public class ArraySorting {
 
@@ -14,38 +16,48 @@ public class ArraySorting {
             // Insertion Sort
             int[] copy = array.clone();
             long start = System.nanoTime();
+            long initialMemory = getUsedMemory();
             insertionSort(copy);
             long end = System.nanoTime();
-            System.out.println("Insertion Sort: " + (end - start) + " ns");
+            long finalMemory = getUsedMemory();
+            System.out.println("Insertion Sort: " + (end - start) + " ns, Maximum Memory Usage: " + (finalMemory - initialMemory) + " bytes");
 
             // Heap Sort
             copy = array.clone();
             start = System.nanoTime();
+            initialMemory = getUsedMemory();
             heapSort(copy);
             end = System.nanoTime();
-            System.out.println("Heap Sort: " + (end - start) + " ns");
+            finalMemory = getUsedMemory();
+            System.out.println("Heap Sort: " + (end - start) + " ns, Maximum Memory Usage: " + (finalMemory - initialMemory) + " bytes");
 
             // Merge Sort
             copy = array.clone();
             start = System.nanoTime();
+            initialMemory = getUsedMemory();
             mergeSort(copy);
             end = System.nanoTime();
-            System.out.println("Merge Sort: " + (end - start) + " ns");
+            finalMemory = getUsedMemory();
+            System.out.println("Merge Sort: " + (end - start) + " ns, Maximum Memory Usage: " + (finalMemory - initialMemory) + " bytes");
 
             // Quick Sort without CUTOFF
             copy = array.clone();
             start = System.nanoTime();
+            initialMemory = getUsedMemory();
             quickSort(copy, 0, copy.length - 1, 0);
             end = System.nanoTime();
-            System.out.println("Quick Sort (No Cutoff): " + (end - start) + " ns");
+            finalMemory = getUsedMemory();
+            System.out.println("Quick Sort (No Cutoff): " + (end - start) + " ns, Maximum Memory Usage: " + (finalMemory - initialMemory) + " bytes");
 
             // Quick Sort with CUTOFF
             for (int c : cutoff) {
                 copy = array.clone();
                 start = System.nanoTime();
+                initialMemory = getUsedMemory();
                 quickSort(copy, 0, copy.length - 1, c);
                 end = System.nanoTime();
-                System.out.println("Quick Sort (Cutoff=" + c + "): " + (end - start) + " ns");
+                finalMemory = getUsedMemory();
+                System.out.println("Quick Sort (Cutoff=" + c + "): " + (end - start) + " ns, Maximum Memory Usage: " + (finalMemory - initialMemory) + " bytes");
             }
         }
     }
@@ -159,5 +171,12 @@ public class ArraySorting {
         array[i + 1] = array[high];
         array[high] = temp;
         return i + 1;
+    }
+
+    // Method to get the used memory
+    private static long getUsedMemory() {
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage memoryUsage = memoryMXBean.getHeapMemoryUsage();
+        return memoryUsage.getUsed();
     }
 }
